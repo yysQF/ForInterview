@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<package name="com.briup.bean"/>
+	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="com.briup.typehandler.AddressTypeHandler"/>
+	</typeHandlers>
+	
+	<mappers>
+		<mapper resource="com/briup/dao/CustomerDao.xml" /> 
+		<mapper resource="com/briup/dao/CategoryDao.xml" /> 
+		<mapper resource="com/briup/dao/BookDao.xml" /> 
+		<mapper resource="com/briup/dao/OrderDao.xml" /> 
+	</mappers>
+</configuration> 

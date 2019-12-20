@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.dao.CategoryDao">
+<!-- 
+	<resultMap type="Category" id="getAll">
+		<id property="id" column="categoryId" />
+		<result property="name" column="name" />
+		<result property="description" column="description" />
+		<collection property="category" select="findAllCategories"
+			column="categoryId">
+		</collection>
+	</resultMap>
+	<select id="findFatherCategories" resultMap="getAll">
+		SELECT * FROM es_category where parent_id is null
+	</select>
+	<select id="findAllCategories" resultType="Category">
+		select e2.categoryId sid
+		from es_category e1,es_category e2
+		where e1.categoryId = e2.parent_id
+		and e2.parent_id=#{id}
+	</select>
+ -->	
+	
+	<resultMap type="Category" id="CategoryResult">
+		<id property="id" column="categoryId" />
+		<result property="name" column="name" />
+		<result property="description" column="description" />
+		<collection property="category" resultMap="Cate"/>
+	</resultMap>
+	<resultMap type="Category" id="Cate">
+		<id property="id" column="sid" />
+		<result property="name" column="sname" />
+		<result property="description" column="sdes" />
+	</resultMap>
+
+	<select id="findFatherCategories" resultMap="CategoryResult">
+		select e1.categoryId,e1.name,e1.description,e2.categoryId sid,e2.name sname,e2.description sdes
+		from es_category e1,es_category e2
+		where e1.categoryId = e2.parent_id
+		and e1.parent_id is null
+	</select>
+	
+	<select id="findFatherId" parameterType="int"  resultType="int">
+		select parent_id
+		from es_category
+		where categoryId = #{id}
+	</select>
+	
+	<select id="findFatherName" parameterType="int"  resultType="String">
+		select name
+		from es_category
+		where categoryId = #{id}
+	</select>
+	
+	<select id="findKidName" parameterType="int"  resultType="String">
+		select name
+		from es_category
+		where categoryId = #{id}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

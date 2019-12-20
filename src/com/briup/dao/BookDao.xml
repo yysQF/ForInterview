@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.dao.BookDao">
+	
+	<resultMap type="Book" id="BookResult">
+		<id property="bookId" column="bookId"/>
+		<result property="name" column="name"/>
+		<result property="price" column="price"/>
+		<result property="author" column="author"/>
+		<result property="publish" column="publish"/>
+		<result property="pubDate" column="pubDate"/>
+		<result property="description" column="description"/>
+		<result property="categoryId" column="category_id"/>
+	</resultMap>
+	
+	<select id="findBookBycategoryId" parameterType="int" resultMap="BookResult">
+		select * 
+		from es_book
+		where category_id = #{categoryId}
+	</select>
+	
+	<select id="findBookById" parameterType="int" resultMap="BookResult">
+		select * 
+		from es_book
+		where bookId=#{bookId}
+	</select>
+	
+	<update id="updateBook">
+		update es_book 
+		set kuc = #{0}
+		where bookId = #{1}
+	</update>	
+	
+	
+</mapper>

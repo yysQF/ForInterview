@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.dao.CustomerDao">
+	<resultMap type="Address" id="AddressResult">
+		<id property="id" column="id" />
+		<result property="country" column="country" />
+		<result property="city" column="city" />
+		<result property="street" column="street" />
+		<association property="customer"
+			resultMap="CustomerResult" />
+	</resultMap>
+	<resultMap type="Customer" id="CustomerResult">
+		<id property="customerId" column="customerId" />
+		<result property="name" column="name" />
+		<result property="password" column="password" />
+		<result property="zipCode" column="zipCode" />
+		<result property="telephone" column="telephone" />
+		<result property="email" column="email" />
+		<association property="address" resultMap="AddressResult" />
+	</resultMap>
+
+	<insert id="addCustomer" parameterType="Customer">
+		<selectKey keyColumn="customerId" keyProperty="customerId"
+			resultType="int" order="BEFORE">
+			select if (max(customerId) is null, 1,
+			max(customerId) +1) as newId from es_customer
+		</selectKey>
+		insert into es_customer
+		values(#{customerId},#{name},#{password},#{zipCode},#{telephone},#{email},#{address})
+	</insert>
+
+	<insert id="addAddr" parameterType="Customer">
+		<selectKey keyProperty="address.id"
+			resultType="int" order="BEFORE">
+			select if (max(id) is null, 1,
+			max(id) +1) as newId from es_addr
+		</selectKey>
+		insert into es_addr
+		values(#{address.id},#{address.country},#{address.city},#{address.street},#{customerId})
+	</insert>
+
+	<select id="findCustomerByName" parameterType="String"
+		resultType="Customer">
+		select * from es_customer where name=#{name}
+	</select>
+
+	<select id="AllCus" resultMap="CustomerResult">
+		select * from es_customer
+	</select>
+
+	<select id="deleteCusById" resultMap="CustomerResult">
+		delete from es_customer
+		where customerId=#{customerId}
+	</select>
+
+</mapper>

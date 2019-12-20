@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.dao.OrderDao">
+	<!-- 订单表 -->
+	<resultMap type="Order" id="OrderResult">
+		<id property="orderFormId" column="orderFormId" />
+		<result property="cost" column="allcost" />
+		<result property="orderDate" column="orderDate" />
+		<collection property="orderLines"
+			resultMap="OrderLineResult" />
+	</resultMap>
+	<!-- 图书 -->
+	<resultMap type="Book" id="BookResult">
+		<id property="bookId" column="bookId" />
+		<result property="name" column="name" />
+		<result property="price" column="price" />
+		<result property="author" column="author" />
+		<result property="publish" column="publish" />
+		<result property="pubDate" column="pubDate" />
+		<result property="description" column="description" />
+		<result property="categoryId" column="category_id" />
+	</resultMap>
+	<!-- 订单项 -->
+	<resultMap type="OrderLine" id="OrderLineResult">
+		<id property="id" column="orderLineId" />
+		<result property="num" column="num" />
+		<result property="cost" column="cost" />
+		<association property="book" resultMap="BookResult" />
+	</resultMap>
+	<!-- 1===============================================================================================1 -->
+	<!-- 插入订单 -->
+	<insert id="saveOrder" parameterType="Order">
+		<selectKey keyProperty="orderFormId" order="BEFORE"
+			resultType="Integer">
+			select if (max(orderFormId) is null,1, max(orderFormId)
+			+1) as newId from es_orderForm
+		</selectKey>
+		insert into es_orderForm(orderFormId,cost ,orderDate,customer_id)
+		values(#{orderFormId},#{cost},#{orderDate},#{customer.customerId})
+	</insert>
+	<!-- 插入订单项 -->
+	<insert id="saveOrderLine" parameterType="OrderLine">
+		<selectKey keyColumn="orderLineId" order="BEFORE"
+			keyProperty="id" resultType="int">
+			select if (max(orderLineId) is
+			null,1,max(orderLineId) +1) as newId from es_orderLine
+		</selectKey>
+		insert into es_orderLine
+		values(#{id},#{num},#{cost},#{book.bookId},#{order.orderFormId})
+	</insert>
+	<!-- 通过用户Id查询订单 -->
+	<select id="selectOrders" resultMap="OrderResult"
+		parameterType="int">
+		select
+		orderFormId,cost allcost,orderDate
+		from
+		es_orderForm
+		where customer_id = #{id}
+	</select>
+	<!-- 查询订单价钱通过订单ID -->
+	<select id="selectAllCostById" parameterType="int"
+		resultType="Double">
+		select cost
+		from es_orderForm
+		where orderFormId=#{id}
+	</select>
+	<!-- 删除订单通过订单id -->
+	<delete id="deleteOrderById" parameterType="int">
+		delete
+		from es_orderForm
+		where orderFormId=#{id}
+	</delete>
+	<!-- 删除订单项通过id -->
+	<delete id="deleteOrderLineById" parameterType="int">
+		delete
+		from es_orderLine
+		where orderForm_id=#{id}
+	</delete>
+	<!-- 查询订单 -->
+	<select id="selectOrderById" parameterType="int" resultType="Order">
+		select * 
+		from es_orderForm
+		where orderFormId = #{id}
+	</select>
+	<!-- 查询订单 级联 订单项 -->
+	<select id="selectOrderWithLine" resultMap="OrderLineResult">
+		select
+		of.orderFormId,of.cost allcost,ol.num,ol.cost
+		from es_orderForm
+		of,es_orderLine ol
+		where of.orderFormId = ol.orderForm_id
+	</select>
+
+	<!-- 查询订单项 -->
+	<select id="selectLines" parameterType="int"
+		resultMap="OrderLineResult">
+		select orderLineId,num,cost
+		from es_orderLine
+		where
+		orderForm_id = #{id}
+	</select>
+
+
+	<!-- 查询订单项级联图书和订单 -->
+	<select id="selectLinesWithOther" parameterType="int"
+		resultMap="OrderLineResult">
+		select *
+		from es_orderLine o,es_book b
+		where o.book_id =
+		b.bookId
+		and o.orderForm_id = #{id}
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
